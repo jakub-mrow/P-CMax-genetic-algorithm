@@ -1,10 +1,17 @@
 import random
 import math
 import sys
+import os
 
-def importData(name):
+def importData(folder, name):
     global NUMOFPROCESSORS, NUMOFTASKS, TASKS
-    with open("data/"+name) as file:
+    directory = str(os.getcwd())
+    directory = list(directory.split("/")[1:-1])
+    directory.append(str(folder))
+    directory = "/".join(directory)
+    directory = "/" + directory
+    os.chdir(directory)
+    with open(name) as file:
         NUMOFPROCESSORS = int(file.readline())
         NUMOFTASKS = int(file.readline())
         TASKS = [int(x) for x in file.read().splitlines()]
@@ -135,13 +142,17 @@ def selection(population, numOfGenerations):
     print(f"\n\nImprovement:{round(((first - ratings[0][0])/first) * 100, 2)}")
 
 if __name__ == "__main__":
-    print("Podaj nazwe pliku do pobrania")
-    name = input()
-    importData(name)
+    numOfIndividualsPerGen = 4000
+    arguments = sys.argv
+    folder = arguments[1]
+    name = arguments[2]
+    if len(arguments) == 4:
+        numOfIndividualsPerGen = int(arguments[3])
+
+    importData(folder, name)
 
     pConverted = pConversion(TASKS)
 
-    numOfIndividualsPerGen = 4000
     numOfGenerations = int(round(1000_000 / NUMOFTASKS, (-1 * len(str(int(1000_000 / NUMOFTASKS)))) + 1)) * (1000 / numOfIndividualsPerGen)
 
     populationZero = firstGeneration(pConverted, numOfIndividualsPerGen)
